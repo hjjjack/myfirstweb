@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jackone的网页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #1a1a3e, #24243e);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 粒子背景 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* 顶部标题 */
+        .header {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7, #ff6ec7);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            letter-spacing: 4px;
+        }
+
+        .header .subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            margin-top: 10px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7);
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+
+        /* 卡片容器 */
+        .nav-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 35px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 单个卡片 */
+        .nav-card {
+            width: 280px;
+            height: 200px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .nav-card:nth-child(1) { animation-delay: 0.3s; }
+        .nav-card:nth-child(2) { animation-delay: 0.5s; }
+        .nav-card:nth-child(3) { animation-delay: 0.7s; }
+
+        /* 卡片光晕 */
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        /* 卡片底部装饰条 */
+        .nav-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 0 0 20px 20px;
+            transition: height 0.3s;
+        }
+
+        .nav-card.homeassistant::after { background: linear-gradient(90deg, #00d2ff, #0090d9); }
+        .nav-card.esphome::after       { background: linear-gradient(90deg, #4caf50, #2e7d32); }
+        .nav-card.video::after         { background: linear-gradient(90deg, #ff9800, #e65100); }
+
+        /* 悬停效果 */
+        .nav-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.25);
+        }
+
+        .nav-card.homeassistant:hover {
+            box-shadow: 0 20px 60px rgba(0, 210, 255, 0.25);
+        }
+        .nav-card.esphome:hover {
+            box-shadow: 0 20px 60px rgba(76, 175, 80, 0.25);
+        }
+        .nav-card.video:hover {
+            box-shadow: 0 20px 60px rgba(255, 152, 0, 0.25);
+        }
+
+        .nav-card:hover::before { opacity: 1; }
+        .nav-card:hover::after  { height: 6px; }
+
+        /* 图标 */
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            transition: transform 0.4s;
+        }
+
+        .nav-card:hover .card-icon {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        /* 卡片文字 */
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+        }
+
+        /* 点击涟漪 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            background: rgba(255,255,255,0.25);
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        /* 页脚 */
+        .footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 60px;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .nav-container { gap: 20px; }
+            .nav-card { width: 240px; height: 170px; }
+            .header h1 { font-size: 2.5rem; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-card { width: 85vw; height: 150px; }
+            .header h1 { font-size: 2rem; }
+            .card-icon { font-size: 2.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 粒子背景 -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 标题 -->
+    <div class="header">
+        <h1>Jackone的网页</h1>
+        <div class="divider"></div>
+        <p class="subtitle">Personal Homepage</p>
+    </div>
+
+    <!-- 导航卡片 -->
+    <div class="nav-container">
+
+        <a href="https://www.home-assistant.io/" target="_blank" rel="noopener noreferrer" class="nav-card homeassistant">
+            <div class="card-icon">🏠</div>
+            <div class="card-title">Home Assistant</div>
+            <div class="card-desc">智能家居平台</div>
+        </a>
+
+        <a href="https://esphome.io/" target="_blank" rel="noopener noreferrer" class="nav-card esphome">
+            <div class="card-icon">🔧</div>
+            <div class="card-title">ESPHome</div>
+            <div class="card-desc">ESP设备固件框架</div>
+        </a>
+
+        <a href="#" target="_blank" rel="noopener noreferrer" class="nav-card video">
+            <div class="card-icon">🎬</div>
+            <div class="card-title">Video</div>
+            <div class="card-desc">视频频道</div>
+        </a>
+
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        © 2026 Jackone. All rights reserved.
+    </div>
+
+    <script>
+        // 生成粒子
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            p.style.width = p.style.height = (Math.random() * 3 + 2) + 'px';
+            particlesContainer.appendChild(p);
+        }
+
+        // 点击涟漪效果
+        document.querySelectorAll('.nav-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+</body>
+</html>
